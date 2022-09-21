@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <h:outputStylesheet library="css" name="lib_style.css"  />
+    </h:head>
+    <h:body>       
+        <ui:composition>
+            <div class="logo">
+                <h:graphicImage library="images" name="logo.png" />
+            </div>
+            <div class="title">
+                <h3>#{msg.welcome_title}</h3>
+            </div>
+            <div class="welcome">
+                <h5>#{msg.welcome}</h5>
+                <h6>#{msg.exit}</h6>
+            </div>
+            <div class="search_div">
+                <h:form styleClass="search_form">
+                    <h:inputText id="search_string" styleClass="search_string"/>
+                    <h:commandButton value="#{msg.search}" styleClass="search_button"/>
+                    
+                    <h:selectOneMenu value="#{searchController.searchType}">
+                        <f:selectItems value="${searchController.searchList}" />
+                    </h:selectOneMenu>
+                </h:form>
+            </div>
+            <div class="letters">
+                
+            </div>
+        </ui:composition>
+    </h:body>
+</html>
+

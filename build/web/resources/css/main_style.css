@@ -1,0 +1,53 @@
+body {
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: normal;
+    background-color: #FFF;
+    margin:100px;
+}
+.main {
+    background-color: antiquewhite;
+    width: 1000px;
+    height: 600px;
+    margin: 0 auto;
+    padding: 20px;	
+}
+.content {
+
+}
+.title {
+    color: crimson;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+.text {
+    color: #8e3c40;
+    padding-left: 100px;
+    padding-right: 100px;
+}
+.login_form{
+    padding-left: 50px;
+    text-align: center;
+    padding: 20px;
+}
+
+.login_div {
+    width:350px;
+    border: solid 1px palevioletred;
+    color: #8e3c40;
+    margin: 0 auto;
+    padding: 10px;
+}
+.footer {
+    color: darksalmon;
+    height: 50px;
+    text-align: center;
+    margin:50px;
+}
+.error {
+    color: #009999;
+    font-style: italic;
+    font-size: 12px;
+}
