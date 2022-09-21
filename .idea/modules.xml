@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/OnlineLibraryJsf.iml" filepath="$PROJECT_DIR$/.idea/OnlineLibraryJsf.iml" />
+      <module fileurl="file://$PROJECT_DIR$/OnlineLibraryJsf.iml" filepath="$PROJECT_DIR$/OnlineLibraryJsf.iml" />
     </modules>
   </component>
 </project>

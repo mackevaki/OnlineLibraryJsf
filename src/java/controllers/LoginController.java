@@ -1,6 +1,7 @@
 package controllers;
 
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
 
 @Named
@@ -14,4 +15,8 @@ public class LoginController {
         return "books";
     }
 
+    public String exit() {
+        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+        return "exit";
+    }
 }

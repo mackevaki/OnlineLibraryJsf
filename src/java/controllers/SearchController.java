@@ -55,12 +55,37 @@ public class SearchController implements Serializable {
                 + "where genre_id=" + genreId + " order by b.name ");
     }
     
-    public void fillBooksByLetter(String letter) {
+    public void fillBooksByLetter() {
+        Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        String letter = params.get("letter");
         fillBooksBySQL("select b.id,b.name,b.isbn,b.page_count,b.publish_year, p.name as publisher, a.fio as author, g.name as genre, b.descr, b.image from library.book b "
                 + "inner join author a on  b.author_id = a.id "
                 + "inner join genre g on b.genre_id = g.id "
                 + "inner join publisher p on b.publisher_id = p.id "
                 + "where substr(b.name, 1, 1)='" + letter + "'" + " order by b.name asc");
+    }
+    
+    public void fillBooksBySearch() {
+        if (searchString.trim().length() == 0) {
+            fillBooksAll();
+            return;
+        }
+        
+        StringBuilder sql = new StringBuilder("select b.descr, b.id,b.name,b.isbn,b.page_count,b.publish_year, p.name as publisher, a.fio as author, g.name as genre, b.image from library.book b "
+                + "inner join author a on b.author_id=a.id "
+                + "inner join genre g on b.genre_id=g.id "
+                + "inner join publisher p on b.publisher_id=p.id ");
+        
+        switch (searchType) {
+            case AUTHOR -> {
+                sql.append("where lower(a.fio) like '%").append(searchString.toLowerCase()).append("%' order by b.name");
+            }
+            case TITLE -> {
+                sql.append("where lower(b.name) like '%").append(searchString.toLowerCase()).append("%' order by b.name");
+            }
+        }
+        
+        fillBooksBySQL(sql.toString());
     }
     
     private void fillBooksAll() {
@@ -98,6 +123,15 @@ public class SearchController implements Serializable {
         return searchString;
     }
 
+    public void setSearchType(SearchType searchType) {
+        this.searchType = searchType;
+    }
+
+    public static void setSearchList(Map<String, SearchType> searchList) {
+        SearchController.searchList = searchList;
+    }
+
+    
     public void setSearchString(String searchString) {
         this.searchString = searchString;
     }
@@ -108,21 +142,6 @@ public class SearchController implements Serializable {
 
     public void setCurrentBookList(ArrayList<Book> currentBookList) {
         this.currentBookList = currentBookList;
-    }
-
-    public byte[] getImage(int id) {
-        byte[] image = null;
-        
-        try(Connection conn = Database.getConnection();
-                Statement stmt = conn.createStatement();
-                ResultSet res = stmt.executeQuery("select image from library.book b where b.id=" + id)) {
-            while(res.next()) {
-                image = res.getBytes("image");
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(SearchController.class.getName()).log(Level.SEVERE, null, ex);
-        }        
-        return image;
     }
     
     public Character[] getRussianLetters() {

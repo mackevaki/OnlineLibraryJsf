@@ -10,12 +10,12 @@ a img {
 /*a:link {
     color: #414958;
     text-decoration: underline; 
-}
-a:visited {
+}*/
+/*a:visited {
     color: #4E5869;
     text-decoration: underline;
-}
-a:hover, a:active, a:focus { 
+}*/
+/*a:hover, a:active, a:focus { 
     text-decoration: none;
 }*/
 
@@ -80,7 +80,7 @@ body {
     text-align: left;
     font-size: 18px;
     font-weight: bold;
-    height: 230px;
+    height: 280px;
 }
 .middle {
     /*background-color: #FFFFFF;*/
@@ -235,6 +235,10 @@ body {
     float:left;
     height: 20px;
     margin: 10px;
+    width: 96%;
+    text-align: center;
+    background-color: #009999;
+    padding: 10px;
 }
 .letters a{
     text-decoration: none;
@@ -242,6 +246,7 @@ body {
     font-size: 15px;
     font-weight: bold;
     cursor: pointer;
+    padding: 4px;
 }
 .letters a:hover, a:active, a:visited {
 	background: linear-gradient(to bottom, #e4685d 5%, #fc8d83 100%);
