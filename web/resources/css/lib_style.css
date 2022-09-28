@@ -67,6 +67,9 @@ ul.nav {
     background-color: #fc8d83;
     color: #d83526;
 }
+.genres a.selected_link {
+    color:red;
+}
 body {
     font-family: Verdana, Geneva, sans-serif;
     font-size: 14px;
@@ -253,6 +256,9 @@ body {
 	background-color: #e4685d;
         cursor: pointer;
 }
+.letters a.selected_letter{
+    color:red;
+}
 .pdf_viewer {
     margin: 0 auto;
     width: 850px;
@@ -261,4 +267,17 @@ body {
 }
 .pdf_viewer iframe {
     margin-top: 10px;
+}
+.pager a{
+    margin-left: 5px;
+    margin-top: 50px;
+}
+
+.pager{
+    margin-left: 15px;
+    width: 100%;
+    float:left;
+}
+.pager .selected_page{
+    color:red;
 }

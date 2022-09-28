@@ -23,127 +23,166 @@ import org.omnifaces.cdi.Eager;
 @Eager
 public class SearchController implements Serializable {
 
-    private SearchType searchType;
-    private String searchString;
-    private ArrayList<Book> currentBookList;
-    private static Map<String, SearchType> searchList = new HashMap<>();
+    private boolean requestFromPager;
+    private int booksOnPage = 2;
+    private int selectedGenreId; // выбранный жанр
+    private char selectedLetter; // выбранная буква алфавита
+    private long selectedPageNumber = 1; // выбранный номер страницы в постраничной навигации
+    private long totalBooksCount; // общее кол-во книг (не на текущей странице, а всего), для постраничности
+    private ArrayList<Integer> pageNumbers = new ArrayList<Integer>();
+    private SearchType searchType;// хранит выбранный тип поиска
+    private String searchString; // хранит поисковую строку
+    private Map<String, SearchType> searchList = new HashMap<String, SearchType>(); // хранит все виды поисков (по автору, по названию)
+    private ArrayList<Book> currentBookList; // текущий список книг для отображения
+    private String currentSql;// последний выполнный sql без добавления limit
 
     public SearchController() {
         fillBooksAll();
-                
+
         ResourceBundle bundle = ResourceBundle.getBundle("nls.messages", FacesContext.getCurrentInstance().getViewRoot().getLocale());
         searchList.put(bundle.getString("author_name"), SearchType.AUTHOR);
         searchList.put(bundle.getString("book_name"), SearchType.TITLE);
     }
 
-    public SearchType getSearchType() {
-        return searchType;
-    }
+    private void fillBooksBySQL(String sql) {
+        StringBuilder sqlBuilder = new StringBuilder(sql);
 
-    public Map<String, SearchType> getSearchList() {
-        return searchList;
-    }
-    
-    public void fillBooksByGenre() {
-        Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-        Integer genreId = Integer.valueOf(params.get("genre_id"));
-            
-        fillBooksBySQL("select b.id,b.name,b.isbn,b.page_count,b.publish_year, p.name as publisher, a.fio as author, g.name as genre, b.descr, b.image from library.book b "
-                + "inner join author a on b.author_id=a.id "
-                + "inner join genre g on b.genre_id=g.id "
-                + "inner join publisher p on b.publisher_id=p.id "
-                + "where genre_id=" + genreId + " order by b.name ");
-    }
-    
-    public void fillBooksByLetter() {
-        Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-        String letter = params.get("letter");
-        fillBooksBySQL("select b.id,b.name,b.isbn,b.page_count,b.publish_year, p.name as publisher, a.fio as author, g.name as genre, b.descr, b.image from library.book b "
-                + "inner join author a on  b.author_id = a.id "
-                + "inner join genre g on b.genre_id = g.id "
-                + "inner join publisher p on b.publisher_id = p.id "
-                + "where substr(b.name, 1, 1)='" + letter + "'" + " order by b.name asc");
-    }
-    
-    public void fillBooksBySearch() {
-        if (searchString.trim().length() == 0) {
-            fillBooksAll();
-            return;
-        }
-        
-        StringBuilder sql = new StringBuilder("select b.descr, b.id,b.name,b.isbn,b.page_count,b.publish_year, p.name as publisher, a.fio as author, g.name as genre, b.image from library.book b "
-                + "inner join author a on b.author_id=a.id "
-                + "inner join genre g on b.genre_id=g.id "
-                + "inner join publisher p on b.publisher_id=p.id ");
-        
-        switch (searchType) {
-            case AUTHOR -> {
-                sql.append("where lower(a.fio) like '%").append(searchString.toLowerCase()).append("%' order by b.name");
+        currentSql = sql;
+
+        Statement stmt = null;
+        ResultSet rs = null;
+        Connection conn = null;
+
+        try {
+            conn = Database.getConnection();
+            stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+
+            System.out.println(requestFromPager);
+            if (!requestFromPager) {
+                rs = stmt.executeQuery(sqlBuilder.toString());
+                rs.last();
+                totalBooksCount = rs.getRow();
+                
+                fillPageNumbers(totalBooksCount, booksOnPage);
             }
-            case TITLE -> {
-                sql.append("where lower(b.name) like '%").append(searchString.toLowerCase()).append("%' order by b.name");
+
+            if (totalBooksCount > booksOnPage) {
+                sqlBuilder.append(" limit ").append(selectedPageNumber * booksOnPage - booksOnPage).append(",").append(booksOnPage);
             }
-        }
-        
-        fillBooksBySQL(sql.toString());
-    }
-    
-    private void fillBooksAll() {
-        fillBooksBySQL("select b.id,b.name,b.isbn,b.page_count,b.publish_year, p.name as publisher, b.descr, "
-                + "a.fio as author, g.name as genre, b.image from library.book b inner join author a on b.author_id=a.id "
-                + "inner join genre g on b.genre_id=g.id inner join publisher p on b.publisher_id=p.id order by b.name");
-    }
-    
-    private void fillBooksBySQL(String sql) {        
-        try (Connection conn = Database.getConnection();
-            Statement stmt = conn.createStatement();
-            ResultSet res = stmt.executeQuery(sql);) {
-            currentBookList = new ArrayList<>(); 
-            
-            while (res.next()) {                
+
+            rs = stmt.executeQuery(sqlBuilder.toString());
+
+            currentBookList = new ArrayList<Book>();
+
+            while (rs.next()) {
                 Book book = new Book();
-                book.setId(res.getLong("id"));
-                book.setName(res.getString("name"));
-                book.setGenre(res.getString("genre"));
-                book.setIsbn(res.getString("isbn"));
-                book.setAuthor(res.getString("author"));
-                book.setPageCount(res.getInt("page_count"));
-                book.setPublishDate(res.getInt("publish_year"));
-                book.setPublisher(res.getString("publisher"));
-                book.setImage(res.getBytes("image"));
-                book.setDescr(res.getString("descr"));
+                book.setId(rs.getLong("id"));
+                book.setName(rs.getString("name"));
+                book.setGenre(rs.getString("genre"));
+                book.setIsbn(rs.getString("isbn"));
+                book.setAuthor(rs.getString("author"));
+                book.setPageCount(rs.getInt("page_count"));
+                book.setPublishDate(rs.getInt("publish_year"));
+                book.setPublisher(rs.getString("publisher"));
+//              book.setImage(rs.getBytes("image"));
+//              book.setContent(rs.getBytes("content"));
+                book.setDescr(rs.getString("descr"));
                 currentBookList.add(book);
             }
         } catch (SQLException ex) {
             Logger.getLogger(SearchController.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (rs != null) {
+                    rs.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(SearchController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
-    public String getSearchString() {
-        return searchString;
+    private void fillBooksAll() {
+        fillBooksBySQL("select b.id,b.name,b.isbn,b.page_count,b.publish_year, p.name as publisher, b.descr, "
+                + "a.fio as author, g.name as genre, b.image from book b inner join author a on b.author_id=a.id "
+                + "inner join genre g on b.genre_id=g.id inner join publisher p on b.publisher_id=p.id order by b.name");
     }
 
-    public void setSearchType(SearchType searchType) {
-        this.searchType = searchType;
+    private void submitValues(Character selectedLetter, long selectedPageNumber, int selectedGenreId, boolean requestFromPager) {
+        this.selectedLetter = selectedLetter;
+        this.selectedPageNumber = selectedPageNumber;
+        this.selectedGenreId = selectedGenreId;
+        this.requestFromPager = requestFromPager;
     }
 
-    public static void setSearchList(Map<String, SearchType> searchList) {
-        SearchController.searchList = searchList;
+    public String fillBooksByGenre() {
+        Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+
+        submitValues(' ', 1, Integer.valueOf(params.get("genre_id")), false);
+
+        fillBooksBySQL("select b.id,b.name,b.isbn,b.page_count,b.publish_year, p.name as publisher, a.fio as author, g.name as genre, b.descr, b.image from book b "
+                + "inner join author a on b.author_id=a.id "
+                + "inner join genre g on b.genre_id=g.id "
+                + "inner join publisher p on b.publisher_id=p.id "
+                + "where genre_id=" + selectedGenreId + " order by b.name ");
+
+        return "books";
     }
 
-    
-    public void setSearchString(String searchString) {
-        this.searchString = searchString;
+    public String fillBooksByLetter() {
+        Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        selectedLetter = params.get("letter").charAt(0);
+
+        submitValues(selectedLetter, 1, -1, false);
+
+
+        fillBooksBySQL("select b.id,b.name,b.isbn,b.page_count,b.publish_year, p.name as publisher, a.fio as author, g.name as genre, b.descr, b.image from book b "
+                + "inner join author a on b.author_id=a.id "
+                + "inner join genre g on b.genre_id=g.id "
+                + "inner join publisher p on b.publisher_id=p.id "
+                + "where substr(b.name,1,1)='" + selectedLetter + "' order by b.name ");
+
+        return "books";
     }
 
-    public ArrayList<Book> getCurrentBookList() {
-        return currentBookList;
+    public String fillBooksBySearch() {
+        submitValues(' ', 1, -1, false);
+
+        if (searchString.trim().length() == 0) {
+            fillBooksAll();
+            return "books";
+        }
+
+        StringBuilder sql = new StringBuilder("select b.descr, b.id,b.name,b.isbn,b.page_count,b.publish_year, p.name as publisher, a.fio as author, g.name as genre, b.image from book b "
+                + "inner join author a on b.author_id=a.id "
+                + "inner join genre g on b.genre_id=g.id "
+                + "inner join publisher p on b.publisher_id=p.id ");
+
+        if (searchType == SearchType.AUTHOR) {
+            sql.append("where lower(a.fio) like '%").append(searchString.toLowerCase()).append("%' order by b.name ");
+
+        } else if (searchType == SearchType.TITLE) {
+            sql.append("where lower(b.name) like '%").append(searchString.toLowerCase()).append("%' order by b.name ");
+        }
+
+        fillBooksBySQL(sql.toString());
+
+        return "books";
     }
 
-    public void setCurrentBookList(ArrayList<Book> currentBookList) {
-        this.currentBookList = currentBookList;
+    public void selectPage() {
+        Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        selectedPageNumber = Integer.valueOf(params.get("page_number"));
+        requestFromPager = true;
+        fillBooksBySQL(currentSql);
     }
-    
+
     public Character[] getRussianLetters() {
         Character[] letters = new Character[33];
         letters[0] = 'А';
@@ -181,5 +220,98 @@ public class SearchController implements Serializable {
         letters[32] = 'Я';
 
         return letters;
-    }       
+    }
+
+   private void fillPageNumbers(long totalBooksCount, int booksCountOnPage) {
+        pageNumbers.clear();
+
+        if (totalBooksCount <= 0 ){
+            return;
+        }
+        
+        int pageCount = (int)totalBooksCount/booksCountOnPage;
+        
+        int ord = (int)totalBooksCount % booksCountOnPage;
+        
+        if (ord>0){
+            pageCount += 1 ;
+        }
+        
+        for (int i = 1; i <= pageCount; i++) {
+            pageNumbers.add(i);
+        }
+
+    }
+
+    public ArrayList<Integer> getPageNumbers() {
+        return pageNumbers;
+    }
+
+    public void setPageNumbers(ArrayList<Integer> pageNumbers) {
+        this.pageNumbers = pageNumbers;
+    }
+
+    public String getSearchString() {
+        return searchString;
+    }
+
+    public void setSearchString(String searchString) {
+        this.searchString = searchString;
+    }
+
+    public SearchType getSearchType() {
+        return searchType;
+    }
+
+    public void setSearchType(SearchType searchType) {
+        this.searchType = searchType;
+    }
+
+    public Map<String, SearchType> getSearchList() {
+        return searchList;
+    }
+
+    public ArrayList<Book> getCurrentBookList() {
+        return currentBookList;
+    }
+
+    public void setTotalBooksCount(long booksCount) {
+        this.totalBooksCount = booksCount;
+    }
+
+    public long getTotalBooksCount() {
+        return totalBooksCount;
+    }
+
+    public int getSelectedGenreId() {
+        return selectedGenreId;
+    }
+
+    public void setSelectedGenreId(int selectedGenreId) {
+        this.selectedGenreId = selectedGenreId;
+    }
+
+    public char getSelectedLetter() {
+        return selectedLetter;
+    }
+
+    public void setSelectedLetter(char selectedLetter) {
+        this.selectedLetter = selectedLetter;
+    }
+
+    public int getBooksOnPage() {
+        return booksOnPage;
+    }
+
+    public void setBooksOnPage(int booksOnPage) {
+        this.booksOnPage = booksOnPage;
+    }
+
+    public void setSelectedPageNumber(long selectedPageNumber) {
+        this.selectedPageNumber = selectedPageNumber;
+    }
+
+    public long getSelectedPageNumber() {
+        return selectedPageNumber;
+    }
 }

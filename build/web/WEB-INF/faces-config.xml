@@ -46,4 +46,19 @@
             <redirect/>
         </navigation-case>
     </navigation-rule>    
+    <navigation-rule>
+        <from-view-id>/pages/books.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>books</from-outcome>
+            <to-view-id>/pages/books.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>    
+    <navigation-rule>
+        <from-view-id>/pages/content.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>books</from-outcome>
+            <to-view-id>/pages/books.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+    </navigation-rule>
 </faces-config>

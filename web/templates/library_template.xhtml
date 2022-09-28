@@ -15,16 +15,34 @@
                 </ui:insert>                 
             </div>
             <div class="middle">
+
                 <div class="left_menu">
                     <ui:insert name="left_menu">
                         <ui:include src="/templates/left_menu.xhtml"/>
                     </ui:insert>                 
                 </div>
+
                 <div class="content">
-                    <ui:insert name="content">
-                        <ui:include src="/templates/content.xhtml"/>
-                    </ui:insert>                 
+
+                    <p><strong><ui:insert name="books_count"/></strong></p>
+
+                    <div class="pager">
+                        <ui:insert name="paginator"/>
+                    </div>
+
+                    <div class="content_books">
+                        <ui:insert name="content">
+                            <ui:include src="/templates/content.xhtml"/>
+                        </ui:insert>    
+                    </div>
+                    
+                    <div class="pager">
+                        <ui:insert name="paginator"/>
+
+                    </div>
+
                 </div>
+
                 <div style="clear: both;">&nbsp;</div>
             </div>
             <div class="footer">

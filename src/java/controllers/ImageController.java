@@ -1,5 +1,6 @@
 package controllers;
 
+import beans.Book;
 import db.Database;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
@@ -31,5 +32,20 @@ public class ImageController implements Serializable {
             Logger.getLogger(SearchController.class.getName()).log(Level.SEVERE, null, ex);
         }        
         return image;
+    }
+    
+    
+    public byte[] getContent(int id) {
+        byte[] content = null;
+        try(Connection conn = Database.getConnection();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery("select content from book where id=" + id)) {
+            while (rs.next()) {
+                content = rs.getBytes("content");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Book.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return content;
     }
 }
