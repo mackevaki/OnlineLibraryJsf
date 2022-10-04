@@ -4,16 +4,15 @@ import beans.Book;
 import db.Database;
 import enums.SearchType;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 import java.sql.*;
 
 import jakarta.faces.context.FacesContext;
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.event.ValueChangeEvent;
 
 import jakarta.inject.Named;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.omnifaces.cdi.Eager;
@@ -32,16 +31,11 @@ public class SearchController implements Serializable {
     private ArrayList<Integer> pageNumbers = new ArrayList<Integer>();
     private SearchType searchType;// хранит выбранный тип поиска
     private String searchString; // хранит поисковую строку
-    private Map<String, SearchType> searchList = new HashMap<String, SearchType>(); // хранит все виды поисков (по автору, по названию)
     private ArrayList<Book> currentBookList; // текущий список книг для отображения
     private String currentSql;// последний выполнный sql без добавления limit
 
     public SearchController() {
         fillBooksAll();
-
-        ResourceBundle bundle = ResourceBundle.getBundle("nls.messages", FacesContext.getCurrentInstance().getViewRoot().getLocale());
-        searchList.put(bundle.getString("author_name"), SearchType.AUTHOR);
-        searchList.put(bundle.getString("book_name"), SearchType.TITLE);
     }
 
     private void fillBooksBySQL(String sql) {
@@ -122,6 +116,8 @@ public class SearchController implements Serializable {
     }
 
     public String fillBooksByGenre() {
+        immitateLoading();
+        
         Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 
         submitValues(' ', 1, Integer.valueOf(params.get("genre_id")), false);
@@ -136,6 +132,8 @@ public class SearchController implements Serializable {
     }
 
     public String fillBooksByLetter() {
+        immitateLoading();
+        
         Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         selectedLetter = params.get("letter").charAt(0);
 
@@ -152,6 +150,8 @@ public class SearchController implements Serializable {
     }
 
     public String fillBooksBySearch() {
+        immitateLoading();
+        
         submitValues(' ', 1, -1, false);
 
         if (searchString.trim().length() == 0) {
@@ -177,6 +177,8 @@ public class SearchController implements Serializable {
     }
 
     public void selectPage() {
+        immitateLoading();
+        
         Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         selectedPageNumber = Integer.valueOf(params.get("page_number"));
         requestFromPager = true;
@@ -243,6 +245,14 @@ public class SearchController implements Serializable {
 
     }
 
+    public void searchTypeChanged(ValueChangeEvent e) {
+        searchType = (SearchType) e.getNewValue();
+    }
+    
+    public void searchStringChanged(ValueChangeEvent e) {
+        searchString = e.getNewValue().toString();
+    }
+    
     public ArrayList<Integer> getPageNumbers() {
         return pageNumbers;
     }
@@ -265,10 +275,6 @@ public class SearchController implements Serializable {
 
     public void setSearchType(SearchType searchType) {
         this.searchType = searchType;
-    }
-
-    public Map<String, SearchType> getSearchList() {
-        return searchList;
     }
 
     public ArrayList<Book> getCurrentBookList() {
@@ -313,5 +319,13 @@ public class SearchController implements Serializable {
 
     public long getSelectedPageNumber() {
         return selectedPageNumber;
+    }
+    
+    private void immitateLoading() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(SearchController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

@@ -5,12 +5,12 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
     <head>
-        <title>Онлайн билиотека</title>
+        <title>Онлайн библиотека</title>
     </head>
     <h:body>
         <ui:composition template="/templates/library_template.xhtml">
             <ui:define name="books_count">
-                #{msg.book_count} #{searchController.totalBooksCount}
+                <h:outputText value="#{msg.book_count} #{searchController.totalBooksCount}" id="booksCount"></h:outputText>
             </ui:define>
             
             <ui:define name="title">
@@ -18,7 +18,7 @@
             </ui:define>
             
             <ui:define name="content">
-                <h:dataTable value="#{searchController.currentBookList}" var="b" cellspacing="10px" columnClasses="col1, col2, col3"> 
+                <h:dataTable id="booksList" value="#{searchController.currentBookList}" var="b" cellspacing="10px" columnClasses="col1, col2, col3"> 
                     <h:column>
                         <h:outputLink value="#{request.contextPath}/PdfContent?id=#{b.id}" target="_blank">
                             <h:graphicImage value="/ShowImage?id=#{b.id}" width="120" height="160"/>
@@ -32,7 +32,15 @@
                             <p><strong>#{msg.publisher}</strong>#{b.publisher}</p>
                             <p><strong>#{msg.publish_year}</strong>#{b.publishDate} г.</p>
                             <p><strong>#{msg.isbn}</strong>#{b.isbn}</p>
-                            <p><h:graphicImage library="images" name="book.gif" /><h:outputLink styleClass="content_link" value="#{request.contextPath}/PdfContent?id=#{b.id}"  target="_blank">#{msg.read} </h:outputLink></p>                            
+                            <p>
+                                <h:graphicImage library="images" name="book.gif" />
+                                <h:outputLink styleClass="content_link" value="#{request.contextPath}/PdfContent?id=#{b.id}"  target="_blank">#{msg.read} </h:outputLink>                           
+                                <h:graphicImage library="images" name="download.png" />
+                                <h:outputLink styleClass="save_link" value="#{request.contextPath}/SavePdf" target="_blank"> 
+                                    <h:outputText value="#{msg.download}"></h:outputText>
+                                    <f:param name="id" value="#{b.id}"/>
+                                </h:outputLink>
+                            </p>    
                         </div>
                     </h:column>
                     <h:column>
@@ -48,8 +56,9 @@
                 <h:form rendered="#{searchController.totalBooksCount>searchController.booksOnPage}">
                     #{msg.pager}
                     <ui:repeat value="#{searchController.pageNumbers}" var="pageNumber" >
-                        <h:commandLink value="#{pageNumber}" action="#{searchController.selectPage()}"  styleClass="#{pageNumber == searchController.selectedPageNumber ? 'selected_page':''}">
+                        <h:commandLink value="#{pageNumber}" styleClass="#{pageNumber == searchController.selectedPageNumber ? 'selected_page':''}">
                             <f:param name="page_number" value="#{pageNumber}" />
+                            <f:ajax onevent="showProgress" event="click" render=":booksList :pages1 :pages2" listener="#{searchController.selectPage()}"/>
                         </h:commandLink>
                     </ui:repeat>
                 </h:form>

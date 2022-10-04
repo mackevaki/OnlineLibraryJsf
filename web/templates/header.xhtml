@@ -12,30 +12,43 @@
             <div class="logo">
                 <h:graphicImage library="images" name="logo.png" />
             </div>
+            
             <div class="title">
                 <h3>#{msg.welcome_title}</h3>
             </div>
+            
             <div class="welcome">
-                <h:form>
-                    <h5>#{msg.welcome},  #{user.username}</h5>
+                <ui:include src="/templates/locales.xhtml"/>
+                <p><h5>#{msg.welcome},  #{user.username}</h5></p>
+                <h:form id="exit">                    
                     <h:commandLink action="#{loginController.exit()}" value="#{msg.exit}"/>
                 </h:form>
             </div>
+            
             <div class="search_div">
                 <h:form styleClass="search_form">
-                    <h:inputText id="search_string" styleClass="search_string" value="#{searchController.searchString}"/>
-                    <h:commandButton action="#{searchController.fillBooksBySearch()}" value="#{msg.search}" styleClass="search_button"/>
-                    
-                    <h:selectOneMenu value="#{searchController.searchType}">
-                        <f:selectItems value="${searchController.searchList}" />
+                    <h:inputText id="search_string" styleClass="search_string" value="#{searchController.searchString}" valueChangeListener="#{searchController.searchStringChanged}">
+                        <f:ajax event="change"/>
+                    </h:inputText>
+                    <h:commandButton value="#{msg.search}" styleClass="search_button">
+                        <f:ajax onevent="showProgress" execute="@form" render=":booksList @form :lettersForm :pages1 :pages2 :booksCount :genresForm" listener="#{searchController.fillBooksBySearch()}"/>                    
+                    </h:commandButton>
+                </h:form>   
+                
+                <h:form styleClass="search_type">
+                    <h:selectOneMenu  styleClass="search_type_dropdown" value="#{searchController.searchType}" valueChangeListener="#{searchController.searchTypeChanged}">
+                        <f:selectItems value="${searchTypeController.searchList}" />
+                        <f:ajax event="change" />
                     </h:selectOneMenu>
                 </h:form>
             </div>
+            
             <div class="letters">
-                <h:form>
+                <h:form id="lettersForm">
                     <ui:repeat value="#{searchController.russianLetters}" var="letter">
-                        <h:commandLink action="#{searchController.fillBooksByLetter()}" value="#{letter}" styleClass="#{letter == searchController.selectedLetter ? 'selected_letter' : ''}">
+                        <h:commandLink value="#{letter}" styleClass="#{letter == searchController.selectedLetter ? 'selected_letter' : ''}">
                             <f:param name="letter" value="#{letter}" />
+                            <f:ajax onevent="showProgress" event="click" render=":booksList @form :lettersForm :pages1 :pages2 :booksCount :genresForm" listener="#{searchController.fillBooksByLetter()}"/>                            
                         </h:commandLink>
                     </ui:repeat>
                 </h:form>                

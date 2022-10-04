@@ -1,6 +1,19 @@
-/* 
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/javascript.js to edit this template
- */
+function checkValue(form, message) {
+    var userInput = form[form.id + ":username"];
+    
+    if (userInput.value == '') {
+        alert(message);
+        userInput.focus();
+        return false;
+    }
+    
+    return true;
+}
 
-
+function showProgress(data) {
+    if (data.status == "begin") {
+        document.getElementById('loading_wrapper').style.display = "block";
+    } else if (data.status == "success") {
+        document.getElementById('loading_wrapper').style.display = "none";
+    }
+}

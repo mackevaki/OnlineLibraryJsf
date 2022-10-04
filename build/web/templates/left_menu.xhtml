@@ -10,10 +10,11 @@
     <h:body>
         <ui:composition>
             <h4>#{msg.genres}</h4>
-            <h:form styleClass="genres">
+            <h:form id="genresForm" styleClass="genres">
                     <ui:repeat value="#{genreController.genreList}" var="g">
-                        <h:commandLink action="#{searchController.fillBooksByGenre()}" value="#{g.name}" styleClass="#{g.id == searchController.selectedGenreId ? 'selected_link' : ''}">
+                        <h:commandLink value="#{g.name}" styleClass="#{g.id == searchController.selectedGenreId ? 'selected_link' : ''}">
                             <f:param name="genre_id" value="#{g.id}"/>
+                            <f:ajax onevent="showProgress" event="click" render=":booksList @form :lettersForm :pages1 :pages2 :booksCount" listener="#{searchController.fillBooksByGenre()}"/>
                         </h:commandLink>
                     </ui:repeat>
                 </h:form>

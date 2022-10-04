@@ -7,17 +7,6 @@
 a img { 
     border: none;
 }
-/*a:link {
-    color: #414958;
-    text-decoration: underline; 
-}*/
-/*a:visited {
-    color: #4E5869;
-    text-decoration: underline;
-}*/
-/*a:hover, a:active, a:focus { 
-    text-decoration: none;
-}*/
 
 .container {
     background-color: antiquewhite;
@@ -44,7 +33,7 @@ h4 {
     width: 75%;
 }
 .search_div {
-    margin: 20px;
+    margin: 15px;
     text-align: left;
     background-color: #f7c5c0;
     height: 35px;
@@ -54,7 +43,7 @@ h4 {
     float: left;
 }
 .search_string {
-    width: 746px;
+    width: 730px;
     float: left;
     padding: 3px;
     margin: 3px;
@@ -116,7 +105,7 @@ body {
 }
 .logo{
     text-align: left;
-    padding: 20px;
+    padding: 10px;
     float: left;
     width: 100px;
     height: 100px;
@@ -132,36 +121,51 @@ body {
 }
 .welcome{
     text-align: right;
-    padding-top: 50px;
+    padding-top: 5px;
     font-weight: normal;
-    padding-right: 65px;
+    padding-right: 25px;
     color: darkcyan;
     float: right;
 }
-.welcome a {
+.welcome #exit a {
     text-decoration: none;
     color: darkcyan;  
     border: #009999 dashed 1px;
     border-radius: 5px;
     padding: 4px;
+    font-size: 13px;
 }
-.welcome a:hover {
+.welcome #exit a:hover {
     background: linear-gradient(to bottom, #009999 5%, #ccffff 100%);
     background-color: activeborder;
     cursor: pointer;
 }
+/*.welcome p a, p a:hover {
+    background: none;
+    border: none;
+    background-color: inherit;
+    cursor: pointer;
+}*/
+.welcome p {
+    margin: 5px;
+}
+.welcome h5 {
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
 .search_form{
-/*    margin: 20px;
-    text-align: left;
-    background-color: #f7c5c0;
-    height: 35px;
-    vertical-align: middle;
-    padding: 5px;
-    float: left;
-    width: 900px;*/
-    float:right;
-    width: 100%;
+    float:left;
+    width: 90%;
     text-align: right;
+}
+.search_type{
+    float:left;
+    width: 10%;
+    text-align: right;
+    margin-top: 5px;
+}
+.search_type_dropdown{
+    width: 85px;
 }
 .search_button {
 	box-shadow: inset 0px 1px 0px 0px #f7c5c0;
@@ -280,4 +284,37 @@ body {
 }
 .pager .selected_page{
     color:red;
+}
+.ajaxLoading { 
+    color: #440000;
+}
+#loading_wrapper{
+    width: 100%;
+    display: block;
+    text-align: center;
+    position: fixed;
+    display: none;
+}
+#loading_wrapper p{
+    background-color: #fde88e;
+    width: 100px;
+    height: 20px;
+    margin: 0 auto;
+    font-weight: bold;
+}
+.locales{
+    width: 100%;
+    height: 20px;    
+    margin-bottom: 20px;
+}
+.locales img {
+    padding-left: 2px;
+    padding-right: 2px;
+}
+.book_info a.content_link {
+    font-size: 12px;
+    margin-right: 2px;
+}
+.book_info a.save_link {
+    font-size: 12px;
 }
