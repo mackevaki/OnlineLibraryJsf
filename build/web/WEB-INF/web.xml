@@ -13,10 +13,6 @@
         <servlet-name>ShowImage</servlet-name>
         <servlet-class>servlets.ShowImage</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>NewServlet</servlet-name>
-        <servlet-class>servlets.NewServlet</servlet-class>
-    </servlet>
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>/faces/*</url-pattern>
@@ -24,10 +20,6 @@
     <servlet-mapping>
         <servlet-name>ShowImage</servlet-name>
         <url-pattern>/ShowImage</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>NewServlet</servlet-name>
-        <url-pattern>/NewServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

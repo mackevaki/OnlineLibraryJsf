@@ -1,6 +1,6 @@
 package servlets;
 
-import controllers.ImageController;
+import controllers.BookListController;
 import jakarta.inject.Inject;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -9,11 +9,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 
 @WebServlet(name = "PdfContent", urlPatterns = {"/PdfContent"})
 public class PdfContent extends HttpServlet {
     @Inject
-    ImageController imageController;
+    BookListController bookListController;
     
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -27,11 +28,17 @@ public class PdfContent extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("application/pdf");
-        int id = Integer.valueOf(request.getParameter("id"));
         
         try ( OutputStream out = response.getOutputStream()) {
-            byte[] content = imageController.getContent(id);
+            int id = Integer.valueOf(request.getParameter("id"));
+            Boolean save = Boolean.valueOf(request.getParameter("save"));
+            String filename = request.getParameter("filename");
+            System.out.println("save=" + save);            
+            byte[] content = bookListController.getContent(id);
             response.setContentLength(content.length);
+            if (save) {
+                response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename, "UTF-8") +".pdf");
+            }
             out.write(content);
         } catch (Exception ex) {
             ex.printStackTrace();

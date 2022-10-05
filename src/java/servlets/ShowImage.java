@@ -1,6 +1,6 @@
 package servlets;
 
-import controllers.ImageController;
+import controllers.BookListController;
 import jakarta.inject.Inject;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -12,7 +12,7 @@ import java.io.OutputStream;
 
 public class ShowImage extends HttpServlet {
     @Inject
-    ImageController ic;
+    BookListController bookListController;
     
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -28,7 +28,7 @@ public class ShowImage extends HttpServlet {
         response.setContentType("image/jpeg");
         try (OutputStream out = response.getOutputStream()) {
             int id = Integer.valueOf(request.getParameter("id"));           
-            byte[] image = ic.getImage(id);
+            byte[] image = bookListController.getImage(id);
             
             response.setContentLength(image.length);
             out.write(image);

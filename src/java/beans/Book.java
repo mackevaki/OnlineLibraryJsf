@@ -1,10 +1,6 @@
 package beans;
 
-import db.Database;
 import java.io.Serializable;
-import java.sql.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Book implements Serializable { 
     private long id;
@@ -98,18 +94,7 @@ public class Book implements Serializable {
     public void setImage(byte[] image) {
         this.image = image;
     }
-    
-    public void fillPdfContent() {
-        try (Connection conn = Database.getConnection(); 
-            Statement stmt = conn.createStatement();
-            ResultSet res = stmt.executeQuery("select content from library.book where id = " + this.getId())) {
-            while (res.next()) {
-                this.setContent(res.getBytes("content"));
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(Book.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+
 
     public String getDescr() {
         return descr;

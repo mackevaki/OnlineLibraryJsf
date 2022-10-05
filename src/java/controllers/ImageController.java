@@ -29,7 +29,7 @@ public class ImageController implements Serializable {
                 image = res.getBytes("image");
             }
         } catch (SQLException ex) {
-            Logger.getLogger(SearchController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BookListController.class.getName()).log(Level.SEVERE, null, ex);
         }        
         return image;
     }
