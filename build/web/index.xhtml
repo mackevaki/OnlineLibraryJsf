@@ -22,30 +22,55 @@
         </noscript>
         
         <div class="main">
+            <div style="float:right;">                
+                <ui:include src="/templates/locales.xhtml"/>       
+            </div>
             <div class="content">
                 <p class="title"><h:graphicImage library="images" name="lib.png" style="height: 160px;"/>
                 </p>
-                <p class="title">#{msg.index_title}</p>
-                <p class="text">Добро пожаловать в онлайн библиотеку, где вы сможете найти любую книгу на ваш вкус. Доступны функции поиска, просмотра, сортировки и многие другие.</p>
-                <p class="text">Проект находится в разработке, поэтому дизайн и функционал будет постоянно дорабатываться.</p>
-                <p class="text">По всем вопросам обращайтесь по адресу <a href="mailto:support@testlibrary.com">support@testlibrary.com</a></p>
-                <p>&nbsp;</p>
+                <p class="title"><h:outputText id="lib_title" value="#{msg.index_title}"/></p>
             </div>
-            <div class="login_div">
-                <p class="title">#{msg.input_info}</p>                
-                <h:form styleClass="login_form">
-                    <span style="color:red;">*</span>#{msg.input_name} <h:inputText id="username" value="#{user.username}" required="true" requiredMessage="#{msg.login_required}">
-                        <f:validator validatorId="validators.LoginValidator"/>
-                        <f:ajax event="keyup" render="loginError"/>
-                    </h:inputText>
-                    <h:commandButton action="pages/books?faces-redirect=true" value="#{msg.entry}" onclick="return checkValue(this.form, '#{msg.login_required}')" styleClass="login_button"/>
-                    <p><h:message id="loginError" for="username" styleClass="error"/></p>
-                </h:form>
-                <ui:include src="/templates/locales.xhtml"/>                
-            </div>
+            <p class="entry">#{msg.input_info}</p>     
+            <h:panelGroup id="login_div" styleClass="login_div" layout="block">
+           
+                <h:form styleClass="login_form" id="login_form">
+                        <div>
+                            <p>
+                                <div class="auth_input"><span style="color:red;">*</span>#{msg.input_name} </div>
+                                <div>
+                                    <h:inputText id="username" value="#{user.username}" required="true" requiredMessage="#{msg.login_required}">
+<!--                                        <f:validator validatorId="validators.LoginValidator"/>-->
+<!--                                        <f:ajax event="keyup" render="username_input"/>-->
+                                    </h:inputText>
+                                </div>
+                            </p>
+                            <p>
+                                <div  class="auth_input"><span style="color:red;">*</span>#{msg.input_pass} </div>
+                                <div>
+                                    <h:inputSecret id="password" value="#{user.password}" required="true" redisplay="true" requiredMessage="#{msg.password_required}">
+<!--                                        <f:ajax event="keyup" execute="@form" render="loginError"/>                            -->
+                                    </h:inputSecret>
+                                </div>
+                            </p>
+                        </div>    
+                        <div style="display:flex;">
+                            <div style="flex:90%;">
+                                <h:commandButton action="#{user.login()}" value="#{msg.entry}" onclick="return checkValue(this.form, '#{msg.login_required}')" styleClass="login_button">
+                                    <f:ajax onevent="showProgress" event="click" execute="@form" render="@form"/>
+                                </h:commandButton>
+                            </div>                        
+                            <div id="loading_wrapper">
+                                <p><h:graphicImage library="images" name="splash.gif"></h:graphicImage></p>
+                            </div>
+                        </div>    
+                        <div>
+                            <p><h:message id="loginError" for="login_form" styleClass="error"/></p>
+                            <p><h:message id="username_input" for="username" styleClass="error"/></p>
+                        </div>
+                </h:form>         
+            </h:panelGroup>
             <div class="footer">#{msg.author_info}</div>
         </div>
     </h:body>
     </f:view>
 </html>
-

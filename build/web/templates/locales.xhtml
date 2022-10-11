@@ -2,7 +2,9 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:ui="http://java.sun.com/jsf/facelets">
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions">
     <head>
         <title>TODO supply a title</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -14,10 +16,14 @@
                 <h:form>
                         <h:commandLink action="#{localeChanger.changeLocale('en')}">
                             <h:graphicImage library="images" name="eng.png" title="#{msg.english}"/>
+                            <f:ajax render=":login_div :lib_title" execute="@form" disabled="#{fn:contains(request.requestURL, 'books.xhtml')}"/>
+                            <f:ajax render="@all" execute="@form" disabled="#{not fn:contains(request.requestURL, 'books.xhtml')}"/>
                         </h:commandLink>
 
                         <h:commandLink action = "#{localeChanger.changeLocale('ru')}">
                             <h:graphicImage library="images" name="rus.png" title="#{msg.russian}"/>
+                            <f:ajax render=":login_div :lib_title" execute="@form" disabled="#{fn:contains(request.requestURL, 'books.xhtml')}"/>
+                            <f:ajax render="@all" execute="@form" disabled="#{not fn:contains(request.requestURL, 'books.xhtml')}"/>
                         </h:commandLink>
                 </h:form>
             </div>

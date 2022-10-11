@@ -21,7 +21,7 @@
                 <ui:include src="/templates/locales.xhtml"/>
                 <p><h5>#{msg.welcome},  #{user.username}</h5></p>
                 <h:form id="exit">                    
-                    <h:commandLink action="#{loginController.exit()}" value="#{msg.exit}"/>
+                    <h:commandLink action="#{user.logout()}" value="#{msg.exit}"/>
                 </h:form>
             </div>
             
@@ -36,7 +36,7 @@
                 </h:form>   
                 
                 <h:form styleClass="search_type">
-                    <h:selectOneMenu  styleClass="search_type_dropdown" value="#{bookListController.searchType}" valueChangeListener="#{bookListController.searchTypeChanged}">
+                    <h:selectOneMenu  styleClass="search_type_dropdown" value="#{bookListController.selectedSearchType}" valueChangeListener="#{bookListController.searchTypeChanged}">
                         <f:selectItems value="${searchTypeController.searchList}" />
                         <f:ajax event="change" />
                     </h:selectOneMenu>

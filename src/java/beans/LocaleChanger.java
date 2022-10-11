@@ -1,8 +1,7 @@
 package beans;
 
-import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.context.FacesContext;
+import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.Locale;
 import org.omnifaces.cdi.Eager;

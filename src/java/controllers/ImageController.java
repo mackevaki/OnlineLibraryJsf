@@ -2,8 +2,8 @@ package controllers;
 
 import beans.Book;
 import db.Database;
-import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Named;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.ResultSet;

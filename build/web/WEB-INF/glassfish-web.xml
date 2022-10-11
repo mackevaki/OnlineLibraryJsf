@@ -16,6 +16,14 @@
     SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
 -->
 <glassfish-web-app error-url="">
+  <security-role-mapping>
+    <role-name>ADMIN</role-name>
+    <group-name>admin</group-name>
+  </security-role-mapping>
+  <security-role-mapping>
+    <role-name>USER</role-name>
+    <group-name>user</group-name>
+  </security-role-mapping>
   <class-loader delegate="true"/>
   <jsp-config>
     <property name="keepgenerated" value="true">

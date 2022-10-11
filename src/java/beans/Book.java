@@ -3,6 +3,8 @@ package beans;
 import java.io.Serializable;
 
 public class Book implements Serializable { 
+    private boolean edit;
+    
     private long id;
     private String name;
     private byte[] content; // filling only when user turn in "read" on books' page
@@ -103,5 +105,14 @@ public class Book implements Serializable {
     public void setDescr(String descr) {
         this.descr = descr;
     }
+
+    public boolean isEdit() {
+        return edit;
+    }
+
+    public void setEdit(boolean edit) {
+        this.edit = edit;
+    }
+    
     
 }

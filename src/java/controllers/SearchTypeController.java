@@ -1,9 +1,9 @@
 package controllers;
 
 import enums.SearchType;
-import jakarta.inject.Named;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.context.FacesContext;
+import jakarta.inject.Named;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
